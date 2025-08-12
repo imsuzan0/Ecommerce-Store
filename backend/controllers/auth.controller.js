@@ -4,6 +4,15 @@ import { generateTokens } from "../utils/generateTokens.js";
 import { setCookies } from "../utils/setCookies.js";
 import jwt from "jsonwebtoken";
 
+const storeRefreshToken = async (userId, refreshToken) => {
+  await redis.set(
+    `refresh_token:${userId}`,
+    refreshToken,
+    "EX",
+    7 * 24 * 60 * 60
+  );
+};
+
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -28,14 +37,6 @@ export const signup = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user._id);
 
-    const storeRefreshToken = async (userId, refreshToken) => {
-      await redis.set(
-        `refresh_token:${userId}`,
-        refreshToken,
-        "EX",
-        7 * 24 * 60 * 60
-      );
-    };
     await storeRefreshToken(user._id, refreshToken);
 
     setCookies(res, accessToken, refreshToken);
@@ -88,6 +89,10 @@ export const login = async (req, res) => {
           role: user.role,
         },
       });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
     }
   } catch (error) {
     console.log("Error in login controller: ", error);
