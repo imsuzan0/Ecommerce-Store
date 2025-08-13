@@ -4,9 +4,10 @@ import { configDotenv } from "dotenv";
 import cookieParser from "cookie-parser";
 
 //Internal Imports
-import authRouter from "./routes/auth.route.js";
 import { connectDB } from "./db/db.js";
+import authRouter from "./routes/auth.route.js";
 import productRouter from "./routes/product.route.js";
+import cartRouter from "./routes/cart.route.js";
 
 configDotenv();
 const app = express();
@@ -20,6 +21,7 @@ app.use(cookieParser());
 //Routes
 app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter)
 
 connectDB().then(() => {
   app.listen(PORT, () => {
