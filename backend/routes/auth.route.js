@@ -4,7 +4,7 @@ import {
   logout,
   refreshToken,
   signup,
-  getProfile,
+  // getProfile,
 } from "../controllers/auth.controller.js";
 const authRouter = express.Router();
 
